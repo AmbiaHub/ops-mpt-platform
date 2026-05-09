@@ -2,255 +2,229 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>OPS MPT - Elite Intelligence</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OPS MPT - Urban Observatory</title>
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;800&display=swap" rel="stylesheet">
     
     <style>
-        :root { --app-height: 100dvh; }
-        body { font-family: 'Sora', sans-serif; background-color: #020617; color: #f8fafc; overflow: hidden; height: var(--app-height); }
-        .grid-overlay { position: fixed; inset: 0; pointer-events: none; z-index: 1; background-image: linear-gradient(rgba(251,191,36,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(251,191,36,0.02) 1px, transparent 1px); background-size: 40px 40px; }
+        :root { 
+            --mpt-blue: #0047AB; /* Pantone 287C */
+            --mpt-yellow: #FFD700; /* Pantone 116C */
+            --app-height: 100dvh;
+        }
         
-        .map-wrapper { position: relative; flex: 1; border-radius: 2.5rem; overflow: hidden; }
-        .map-wrapper::after { content:''; position:absolute; inset:0; border-radius:2.5rem; box-shadow: inset 0 0 100px rgba(0,0,0,0.6); pointer-events:none; z-index: 1000; }
-        #map { height: 100%; width: 100%; background: #020617; }
-        
-        .glass { backdrop-filter: blur(20px); background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(255,255,255,0.05); }
-        .fade-up { animation: fadeUp .8s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; }
-        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        body { 
+            font-family: 'Sora', sans-serif; 
+            background-color: #f8fafc; 
+            color: #1e293b; 
+            overflow: hidden; 
+            height: var(--app-height); 
+        }
 
-        /* CCTV Mockup Animation */
-        .cctv-glitch { animation: glitch 4s linear infinite; }
-        @keyframes glitch { 0% { opacity: 0.8; } 50% { opacity: 1; } 51% { opacity: 0.7; } 100% { opacity: 0.8; } }
+        /* Clean Glassmorphism */
+        .glass-panel { 
+            background: rgba(255, 255, 255, 0.9); 
+            backdrop-filter: blur(10px); 
+            border: 1px solid rgba(0, 71, 171, 0.1);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        }
 
-        .radar-sweep { position: absolute; bottom: 30px; right: 30px; width: 100px; height: 100px; border: 1px solid rgba(251,191,36,0.2); border-radius: 50%; z-index: 1001; background: rgba(15,23,42,0.6); }
-        .radar-sweep::after { content:''; position:absolute; inset:0; background: conic-gradient(from 0deg, transparent, rgba(251,191,36,0.3)); border-radius: 50%; animation: rotate 4s linear infinite; }
-        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        /* Hero Styling */
+        .mpt-gradient {
+            background: linear-gradient(135deg, var(--mpt-blue) 0%, #002e6e 100%);
+        }
+
+        #map { 
+            height: 100%; 
+            width: 100%; 
+            background: #e2e8f0; 
+            border-radius: 1.5rem;
+        }
+
+        /* Custom Marker */
+        .node-pulse {
+            width: 12px;
+            height: 12px;
+            background: var(--mpt-blue);
+            border: 2px solid white;
+            border-radius: 50%;
+            box-shadow: 0 0 0 rgba(0, 71, 171, 0.4);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(0, 71, 171, 0.4); }
+            70% { box-shadow: 0 0 0 15px rgba(0, 71, 171, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 71, 171, 0); }
+        }
+
+        .scroll-hide::-webkit-scrollbar { display: none; }
     </style>
 </head>
-<body>
+<body class="flex flex-col">
 
-<div class="grid-overlay"></div>
-
-<div id="boot" class="fixed inset-0 z-[2000] flex flex-col items-center justify-center bg-[#020617]">
-    <div id="boot-text" class="mb-4 text-yellow-400 font-black text-[9px] tracking-[1em] italic uppercase animate-pulse">Initializing Urban Mesh</div>
-    <div class="w-64 h-[1px] bg-white/5 overflow-hidden">
-        <div id="boot-progress" class="h-full bg-yellow-400 w-0 transition-all duration-[1500ms]"></div>
-    </div>
-</div>
-
-<div id="app" class="relative z-10 flex flex-col h-full p-4 gap-4 opacity-0 transition-opacity duration-1000">
-    <!-- Header with KPI Panel -->
-    <header class="flex flex-wrap justify-between items-center gap-4 px-2 fade-up" style="animation-delay: 0.1s;">
+    <header class="mpt-gradient text-white p-4 lg:p-6 flex justify-between items-center z-50">
         <div class="flex items-center gap-4">
-            <div class="w-10 h-10 bg-yellow-400 rounded-xl flex items-center justify-center text-slate-900 font-black italic shadow-[0_0_20px_rgba(251,191,36,0.4)]">MPT</div>
+            <div class="bg-white p-2 rounded-lg shadow-lg">
+                <div class="w-8 h-8 flex items-center justify-center font-black text-blue-800 italic">OPS</div>
+            </div>
             <div>
-                <h1 class="text-lg font-black tracking-tighter uppercase italic">OPS <span class="text-yellow-400">ELITE</span></h1>
-                <p class="text-[7px] tracking-[0.4em] text-slate-500 font-bold uppercase italic">Sepatan Urban Tactical Interface</p>
+                <h1 class="text-sm lg:text-lg font-extrabold tracking-tight uppercase">Masyarakat Perencana Terbuka</h1>
+                <p class="text-[8px] lg:text-[10px] font-light tracking-[0.2em] opacity-80 uppercase italic">
+                    Open Planners Society • Merencanakan Kehidupan Bersama
+                </p>
             </div>
         </div>
-
-        <!-- ELITE Upgrade: KPI Panel -->
-        <div class="hidden xl:flex gap-6 glass px-6 py-2 rounded-2xl border-y border-yellow-400/10">
-            <div class="text-center">
-                <p class="text-[7px] font-black text-slate-500 uppercase">Congestion</p>
-                <p class="text-xs font-black text-yellow-400">LOW [22%]</p>
-            </div>
-            <div class="text-center border-x border-white/5 px-6">
-                <p class="text-[7px] font-black text-slate-500 uppercase">Mobility Score</p>
-                <p class="text-xs font-black text-white italic">8.4 / 10</p>
-            </div>
-            <div class="text-center">
-                <p class="text-[7px] font-black text-slate-500 uppercase">Flood Risk</p>
-                <p class="text-xs font-black text-green-400 italic">NOMINAL</p>
-            </div>
-        </div>
-
-        <div class="flex gap-2">
-            <div class="glass p-1 rounded-xl flex gap-1">
-                <button onclick="setBaseLayer('tactical')" id="btn-tactical" class="px-3 py-1.5 rounded-lg text-[8px] font-black uppercase bg-yellow-400 text-black">Tactical</button>
-                <button onclick="setBaseLayer('satellite')" id="btn-satellite" class="px-3 py-1.5 rounded-lg text-[8px] font-black uppercase text-yellow-400/50 hover:text-yellow-400 transition-all">Satellite</button>
-            </div>
+        <div class="hidden md:flex gap-6 text-[10px] font-bold uppercase tracking-widest">
+            <a href="#" class="border-b-2 border-yellow-400">Observatory</a>
+            <a href="#" class="opacity-60 hover:opacity-100 transition">Featured Works</a>
+            <a href="#" class="opacity-60 hover:opacity-100 transition">Network</a>
         </div>
     </header>
 
-    <div class="flex flex-col lg:flex-row gap-4 flex-1 min-h-0">
-        <!-- Sidebar Intelligence -->
-        <aside class="w-full lg:w-80 flex flex-col gap-4 fade-up" style="animation-delay: 0.3s;">
-            <!-- ELITE Upgrade: CCTV Mock -->
-            <div class="glass rounded-[2.5rem] overflow-hidden aspect-video relative group">
-                <div class="absolute inset-0 bg-slate-900 flex items-center justify-center">
-                    <div class="absolute top-3 left-3 z-10 flex gap-2">
-                        <span class="w-2 h-2 bg-red-600 rounded-full animate-pulse"></span>
-                        <span class="text-[7px] font-black uppercase text-white tracking-widest">LIVE: NODE_04</span>
-                    </div>
-                    <div class="text-[8px] text-white/20 font-black italic uppercase tracking-tighter cctv-glitch">SIMPANG_KEDAUNG_CAM_01</div>
-                </div>
-                <div class="absolute inset-0 border-2 border-yellow-400/0 group-hover:border-yellow-400/20 transition-all pointer-events-none"></div>
+    <main class="flex-1 flex flex-col lg:flex-row gap-4 p-4 min-h-0 bg-slate-50">
+        
+        <aside class="w-full lg:w-96 flex flex-col gap-4 overflow-y-auto scroll-hide">
+            
+            <div class="glass-panel p-6 rounded-3xl">
+                <h2 class="text-xl font-extrabold text-blue-900 leading-tight mb-2">Urban Spatial Intelligence</h2>
+                <p class="text-xs text-slate-500 leading-relaxed italic">
+                    Platform kolaborasi data perencanaan wilayah berbasis observasi lapangan dan keahlian kolektif mahasiswa PWK.
+                </p>
             </div>
 
-            <div class="glass p-6 rounded-[2.5rem] flex-1 flex flex-col border-t-2 border-yellow-400/10">
-                <p class="text-[9px] font-black text-yellow-500 uppercase tracking-widest italic mb-4">Spatial Analytics</p>
-                <div class="flex-1 relative min-h-[100px]"><canvas id="telemetryChart"></canvas></div>
-                <div class="mt-4 flex justify-between items-end">
-                    <div>
-                        <p class="text-[7px] text-slate-500 uppercase font-black">Sync Stability</p>
-                        <p id="acc-val" class="text-base font-black text-white italic tracking-tighter">99.85%</p>
+            <div class="glass-panel p-6 rounded-3xl flex-1">
+                <h3 class="text-[10px] font-black text-blue-800 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
+                    <span class="w-2 h-2 bg-yellow-400 rounded-full animate-ping"></span> Regional Activity
+                </h3>
+                <div class="space-y-6">
+                    <div class="border-l-2 border-blue-100 pl-4 relative">
+                        <div class="absolute -left-[5px] top-0 w-2 h-2 bg-blue-600 rounded-full"></div>
+                        <p class="text-[9px] font-bold text-blue-600 uppercase">Banten Sector</p>
+                        <p class="text-[11px] font-semibold text-slate-700 mt-1 uppercase italic">Survei primer Simpang Kedaung selesai.</p>
+                        <p class="text-[8px] text-slate-400 mt-1 uppercase tracking-tighter">10 Mei 2026 • 09:15 WIB</p>
                     </div>
-                    <div id="live-clock" class="text-[8px] font-black text-yellow-400 italic">--:--:--</div>
+                    <div class="border-l-2 border-blue-100 pl-4 relative">
+                        <div class="absolute -left-[5px] top-0 w-2 h-2 bg-blue-600 rounded-full"></div>
+                        <p class="text-[9px] font-bold text-blue-600 uppercase">Aceh Sector</p>
+                        <p class="text-[11px] font-semibold text-slate-700 mt-1 uppercase italic">Draft laporan logistik regional direview oleh pembina.</p>
+                        <p class="text-[8px] text-slate-400 mt-1 uppercase tracking-tighter">09 Mei 2026 • 14:30 WIB</p>
+                    </div>
+                    <div class="border-l-2 border-blue-100 pl-4 relative">
+                        <div class="absolute -left-[5px] top-0 w-2 h-2 bg-blue-600 rounded-full"></div>
+                        <p class="text-[9px] font-bold text-blue-600 uppercase">Studio Sepatan</p>
+                        <p class="text-[11px] font-semibold text-slate-700 mt-1 uppercase italic">Visualisasi GIS Layer Drainase dipublikasikan.</p>
+                        <p class="text-[8px] text-slate-400 mt-1 uppercase tracking-tighter">08 Mei 2026 • 11:00 WIB</p>
+                    </div>
                 </div>
             </div>
-            <div class="glass p-5 rounded-[2.5rem] bg-yellow-400/5 border border-yellow-400/10">
-                <p class="text-[9px] font-black text-yellow-400 uppercase tracking-widest mb-2">AI Insights</p>
-                <p id="ai-text" class="text-[9px] text-slate-300 font-bold leading-relaxed uppercase italic h-10">Syncing Intelligence...</p>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div class="glass-panel p-4 rounded-3xl text-center">
+                    <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest">Active Members</p>
+                    <p class="text-xl font-black text-blue-900 mt-1">06</p>
+                </div>
+                <div class="glass-panel p-4 rounded-3xl text-center">
+                    <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest">Base Provinces</p>
+                    <p class="text-xl font-black text-blue-900 mt-1">05</p>
+                </div>
             </div>
         </aside>
 
-        <!-- Main GIS Interface -->
-        <main class="map-wrapper glass p-1.5 fade-up" style="animation-delay: 0.5s;">
-            <!-- ELITE Upgrade: GIS Legend -->
-            <div class="absolute bottom-10 left-10 z-[1001] glass p-4 rounded-2xl border border-white/5">
-                <p class="text-[8px] font-black text-yellow-400 uppercase tracking-widest mb-3 italic">Spatial Legend</p>
-                <div class="flex flex-col gap-2">
-                    <div class="flex items-center gap-3"><div class="w-2 h-2 rounded-full bg-yellow-400 shadow-[0_0_8px_#fbbf24]"></div><span class="text-[8px] font-bold uppercase text-slate-300">High Density</span></div>
-                    <div class="flex items-center gap-3"><div class="w-2 h-2 rounded-full bg-slate-700"></div><span class="text-[8px] font-bold uppercase text-slate-300">Nominal Flow</span></div>
-                    <div class="flex items-center gap-3"><div class="w-4 h-[1px] bg-yellow-400/40"></div><span class="text-[8px] font-bold uppercase text-slate-300">Neural Connect</span></div>
+        <section class="flex-1 glass-panel p-2 rounded-[2rem] relative overflow-hidden">
+            
+            <div class="absolute top-6 left-6 z-[1000] flex flex-col gap-2">
+                <div class="glass-panel px-4 py-3 rounded-2xl border-l-4 border-blue-600">
+                    <p class="text-[8px] font-black text-blue-800 uppercase tracking-[0.2em] italic mb-1">Spatial Dashboard</p>
+                    <h3 class="text-sm font-extrabold text-slate-800 uppercase italic tracking-tighter">Province Basis Observation</h3>
+                </div>
+                <div class="flex gap-2">
+                    <button class="bg-blue-800 text-white px-4 py-2 rounded-xl text-[9px] font-bold uppercase shadow-lg hover:bg-blue-700 transition">Mobilitas</button>
+                    <button class="bg-white text-blue-800 px-4 py-2 rounded-xl text-[9px] font-bold uppercase shadow-lg hover:bg-slate-50 transition border border-blue-100">Infrastruktur</button>
                 </div>
             </div>
 
-            <div class="radar-sweep pointer-events-none"></div>
+            <div class="absolute bottom-6 right-6 z-[1000] glass-panel p-4 rounded-2xl">
+                <p class="text-[8px] font-black text-blue-800 uppercase tracking-widest mb-3 italic">GIS Legend</p>
+                <div class="space-y-2">
+                    <div class="flex items-center gap-3">
+                        <div class="node-pulse"></div>
+                        <span class="text-[8px] font-bold uppercase text-slate-600">Regional Node</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="w-3 h-1 bg-blue-600 opacity-30"></div>
+                        <span class="text-[8px] font-bold uppercase text-slate-600">Observation Path</span>
+                    </div>
+                </div>
+            </div>
+
             <div id="map"></div>
-        </main>
-    </div>
-</div>
+        </section>
+    </main>
 
-<script>
-    let map, telemetryChart, heatLayer, tacticalLayer, satelliteLayer;
-    let syncVal = 99.85;
+    <footer class="bg-white border-t border-slate-200 px-6 py-3 flex justify-between items-center">
+        <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest italic">
+            [span_1](start_span)[span_2](start_span)© 2026 Masyarakat Perencana Terbuka • UPBJJ Serang, Universitas Terbuka[span_1](end_span)[span_2](end_span)
+        </p>
+        <div class="flex gap-4">
+            <span class="text-[8px] font-black text-blue-800 uppercase bg-blue-50 px-3 py-1 rounded-full">Status: Active Observation</span>
+        </div>
+    </footer>
 
-    function setBaseLayer(type) {
-        if(type === 'satellite') {
-            map.removeLayer(tacticalLayer); satelliteLayer.addTo(map);
-            document.getElementById('btn-satellite').className = 'px-3 py-1.5 rounded-lg text-[8px] font-black uppercase bg-yellow-400 text-black shadow-lg';
-            document.getElementById('btn-tactical').className = 'px-3 py-1.5 rounded-lg text-[8px] font-black uppercase text-yellow-400/50';
-        } else {
-            map.removeLayer(satelliteLayer); tacticalLayer.addTo(map);
-            document.getElementById('btn-tactical').className = 'px-3 py-1.5 rounded-lg text-[8px] font-black uppercase bg-yellow-400 text-black shadow-lg';
-            document.getElementById('btn-satellite').className = 'px-3 py-1.5 rounded-lg text-[8px] font-black uppercase text-yellow-400/50';
-        }
-    }
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize Map with Professional Theme
+            const map = L.map('map', { 
+                zoomControl: false, 
+                attributionControl: false 
+            }).setView([-2.5, 118], 5);
 
-    const aiTexts = [
-        'Flow optimization active at Kedaung Intersection.',
-        'Analyzing traffic influx near Pasar Tanah Merah.',
-        'North Sector drainage sensors reporting stable.',
-        'Infrastructure Node 04: Maintenance threshold nominal.',
-        'Mobility trends suggest 12% increase in Hub sector.'
-    ];
+            // Using Professional Clean Basemap (CartoDB Voyager)
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+                maxZoom: 19
+            }).addTo(map);
 
-    window.addEventListener('DOMContentLoaded', () => {
-        // Boot Sequence
-        setTimeout(() => document.getElementById('boot-progress').style.width = '100%', 100);
-        setTimeout(() => {
-            document.getElementById('boot').classList.add('opacity-0');
-            document.getElementById('app').classList.add('opacity-100');
-            setTimeout(() => { 
-                document.getElementById('boot').remove(); 
-                map.invalidateSize(); 
-                // Start animated sync counter
-                setInterval(() => {
-                    syncVal = 99 + Math.random() * 0.9;
-                    document.getElementById('acc-val').innerText = syncVal.toFixed(2) + '%';
-                }, 3000);
-            }, 700);
-        }, 2000);
+            L.control.zoom({ position: 'bottomleft' }).addTo(map);
 
-        setInterval(() => {
-            document.getElementById('live-clock').innerText = new Date().toLocaleTimeString('id-ID', { hour12: false }) + ' WIB';
-        }, 1000);
+            [span_3](start_span)// Define Initial Basis Provinces from Document[span_3](end_span)
+            const regionalNodes = [
+                { pos: [4.695, 96.749], name: "Aceh Sector", desc: "Regional Logistics & Maritime Planning" },
+                { pos: [-6.126, 106.574], name: "Banten Sector", desc: "Urban Mobility & Infrastructure" },
+                { pos: [-7.536, 112.238], name: "Jawa Timur Sector", desc: "Industrial Development Hub" },
+                { pos: [-5.147, 119.432], name: "Sulawesi Selatan Sector", desc: "Regional Planning Studio" },
+                { pos: [-3.316, 114.590], name: "Kalimantan Selatan Sector", desc: "Environmental Planning" }
+            ];
 
-        // Map Engine
-        tacticalLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png');
-        satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}');
+            const nodeIcon = L.divIcon({
+                className: 'node-pulse-wrapper',
+                html: '<div class="node-pulse"></div>',
+                iconSize: [12, 12]
+            });
 
-        map = L.map('map', { zoomControl: false, attributionControl: false }).setView([-6.126, 106.574], 14);
-        tacticalLayer.addTo(map);
-        L.control.zoom({ position:'bottomright' }).addTo(map);
+            regionalNodes.forEach(node => {
+                L.marker(node.pos, { icon: nodeIcon }).addTo(map)
+                    .bindPopup(`
+                        <div style="font-family: Sora, sans-serif; padding: 10px;">
+                            <p style="font-size: 8px; font-weight: 800; color: #0047AB; text-transform: uppercase; margin-bottom: 4px;">${node.name}</p>
+                            <p style="font-size: 10px; font-weight: 600; color: #334155; margin: 0;">${node.desc}</p>
+                        </div>
+                    `);
+            });
 
-        // Heatmap Dynamic Pulse
-        let heatData = [];
-        for(let i=0; i<40; i++) { 
-            heatData.push([-6.126 + (Math.random()-0.5)*0.04, 106.574 + (Math.random()-0.5)*0.04, Math.random()]); 
-        }
-        heatLayer = L.heatLayer(heatData, { radius: 25, blur: 18, max: 0.8, gradient: {0.4: '#1e293b', 0.6: '#f59e0b', 1: '#fbbf24'} }).addTo(map);
-
-        setInterval(() => {
-            heatData.forEach(d => { d[2] = Math.random(); });
-            heatLayer.setLatLngs(heatData);
-        }, 4000);
-
-        // Nodes and Labels
-        const nodes = [
-            { pos: [-6.126, 106.574], name: "Sepatan Command Hub" },
-            { pos: [-6.121, 106.579], name: "Simpang Kedaung Node" },
-            { pos: [-6.133, 106.586], name: "Pasar Tanah Merah Sector" }
-        ];
-
-        L.polyline(nodes.map(n => n.pos), { color: '#fbbf24', weight: 1, opacity: 0.15, dashArray: '10, 10' }).addTo(map);
-
-        const pulseIcon = L.divIcon({ 
-            className: 'custom-pulse', 
-            html: '<div class="w-3 h-3 bg-yellow-400 rounded-full animate-pulse shadow-[0_0_15px_#fbbf24]"></div>', 
-            iconSize: [12, 12] 
+            // Drawing Network Lines (Open Collective Connection)
+            const connectionPath = regionalNodes.map(node => node.pos);
+            L.polyline(connectionPath, {
+                color: '#0047AB',
+                weight: 1,
+                opacity: 0.1,
+                dashArray: '10, 20'
+            }).addTo(map);
         });
-        
-        nodes.forEach(n => {
-            L.marker(n.pos, { icon: pulseIcon }).addTo(map)
-             .bindTooltip(n.name, { permanent: false, direction: 'top', className: 'glass-tooltip' });
-        });
-
-        // Charting
-        const ctx = document.getElementById('telemetryChart').getContext('2d');
-        telemetryChart = new Chart(ctx, {
-            type: 'line',
-            data: { labels: Array(12).fill(''), datasets: [{ data: Array(12).fill(30), borderColor: '#fbbf24', borderWidth: 1, pointRadius: 0, fill: true, backgroundColor: 'rgba(251, 191, 36, 0.02)', tension: 0.4 }] },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { display: false } } }
-        });
-
-        setInterval(() => {
-            telemetryChart.data.datasets[0].data.shift();
-            telemetryChart.data.datasets[0].data.push(Math.floor(Math.random() * 20) + 20);
-            telemetryChart.update('none');
-        }, 2500);
-
-        let aiIdx = 0;
-        setInterval(() => {
-            const aiElem = document.getElementById('ai-text');
-            aiElem.style.opacity = 0;
-            setTimeout(() => { aiElem.innerText = aiTexts[aiIdx % aiTexts.length]; aiElem.style.opacity = 1; aiIdx++; }, 500);
-        }, 6000);
-    });
-</script>
-
-<style>
-    /* Tooltip Customization */
-    .glass-tooltip { 
-        background: rgba(15, 23, 42, 0.9) !important; 
-        color: #fbbf24 !important; 
-        border: 1px solid rgba(251, 191, 36, 0.2) !important; 
-        font-family: 'Sora', sans-serif !important; 
-        font-size: 8px !important; 
-        font-weight: 800 !important; 
-        text-transform: uppercase !important; 
-        padding: 4px 8px !important;
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
-    }
-</style>
+    </script>
 </body>
 </html>
