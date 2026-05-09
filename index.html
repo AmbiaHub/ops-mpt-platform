@@ -28,7 +28,6 @@
     <script type="text/babel">
         const { useState, useEffect, useRef } = React;
 
-        // PRIORITAS 1: DATA DINAMIS (Bisa ditambah dengan mudah)
         const SURVEY_DATA = [
             { id: 1, lat: -6.126, lng: 106.574, type: "Pusat Koordinasi", desc: "Kantor Kecamatan Sepatan", icon: "🏛️" },
             { id: 2, lat: -6.130, lng: 106.585, type: "Titik Macet", desc: "Pasar Sepatan - Hambatan Samping Tinggi", icon: "🚗" },
@@ -46,13 +45,12 @@
 
             return (
                 <div className="flex min-h-screen relative overflow-hidden">
-                    {/* SIDEBAR */}
                     <aside className="sidebar w-20 md:w-64 sticky top-0 h-screen text-slate-300 p-6 flex flex-col shadow-2xl z-50">
                         <div className="flex items-center gap-3 mb-12">
-                            <div className="w-10 h-10 bg-yellow-400 rounded-2xl flex-shrink-0 flex items-center justify-center text-slate-900 font-black shadow-[0_0_20px_rgba(251,191,36,0.3)]">OPS</div>
+                            <div className="w-10 h-10 bg-yellow-400 rounded-2xl flex-shrink-0 flex items-center justify-center text-slate-900 font-black shadow-lg">OPS</div>
                             <div className="hidden md:block">
                                 <p className="text-white font-black text-sm tracking-tighter leading-none">MPT PLATFORM</p>
-                                <p className="text-[8px] text-slate-500 font-bold tracking-[0.2em] mt-1">SPATIAL INTEL</p>
+                                <p className="text-[8px] text-slate-500 font-bold tracking-[0.2em] mt-1 uppercase">Spatial Intel</p>
                             </div>
                         </div>
                         
@@ -65,17 +63,16 @@
                         
                         <div className="mt-auto hidden md:block pt-6 border-t border-slate-800">
                             <p className="text-[9px] font-black text-yellow-500 tracking-widest uppercase">Project Identity</p>
-                            <p className="text-[10px] text-slate-400 mt-2 font-medium leading-relaxed">Studio Perencanaan Wilayah & Kota - Sepatan</p>
+                            <p className="text-[10px] text-slate-400 mt-2 font-medium leading-relaxed uppercase">Kecamatan Sepatan</p>
                         </div>
                     </aside>
 
-                    {/* MAIN */}
                     <main className="flex-1 p-6 md:p-10 bg-slate-50 overflow-y-auto">
                         <header className="flex justify-between items-center mb-10 bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100">
                             <div>
                                 <div className="flex items-center gap-3 mb-1">
                                     <h1 className="text-2xl font-black text-slate-800 tracking-tighter uppercase italic">Operational Dashboard</h1>
-                                    <span className="bg-slate-900 text-yellow-400 text-[8px] px-2 py-1 rounded-md font-black tracking-widest">PRO</span>
+                                    <span className="bg-slate-900 text-yellow-400 text-[8px] px-2 py-1 rounded-md font-black tracking-widest uppercase">Pro</span>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <div className="w-2 h-2 bg-green-500 rounded-full pulse-live"></div>
@@ -85,9 +82,9 @@
                             <div className="flex items-center gap-6">
                                 <div className="text-right hidden sm:block">
                                     <p className="text-sm font-black text-slate-800 tracking-tight">Ambia Mursalin</p>
-                                    <p className="text-[9px] text-yellow-600 font-black uppercase tracking-widest">Director of Spatial Ops</p>
+                                    <p className="text-[9px] text-yellow-600 font-black uppercase tracking-widest uppercase">Director of Spatial Ops</p>
                                 </div>
-                                <div className="w-14 h-14 rounded-[1.2rem] bg-slate-900 border-2 border-yellow-400 flex items-center justify-center text-yellow-400 font-black text-xl shadow-2xl transform rotate-3 hover:rotate-0 transition-transform">AM</div>
+                                <div className="w-14 h-14 rounded-[1.2rem] bg-slate-900 border-2 border-yellow-400 flex items-center justify-center text-yellow-400 font-black text-xl shadow-2xl transform rotate-3 hover:rotate-0 transition-transform uppercase">AM</div>
                             </div>
                         </header>
 
@@ -97,14 +94,13 @@
                         {tab === 'tim' && <Team />}
                     </main>
 
-                    {/* TOAST NOTIFICATION (PRIORITAS 2: MODERN UI) */}
                     {showToast && (
                         <div className="fixed bottom-10 right-10 z-[100] toast-enter">
                             <div className="bg-slate-900 text-white px-8 py-5 rounded-3xl shadow-2xl border-l-8 border-yellow-400 flex items-center gap-4">
-                                <span className="text-2xl">⚡</span>
+                                <span className="text-2xl uppercase">⚡</span>
                                 <div>
-                                    <p className="text-[10px] font-black text-yellow-400 uppercase tracking-widest">System Message</p>
-                                    <p className="text-xs font-bold">Data Spasial Berhasil Disinkronkan!</p>
+                                    <p className="text-[10px] font-black text-yellow-400 uppercase tracking-widest uppercase">System Message</p>
+                                    <p className="text-xs font-bold uppercase">Data Spasial Berhasil Disinkronkan!</p>
                                 </div>
                             </div>
                         </div>
@@ -115,8 +111,8 @@
 
         const NavBtn = ({ id, icon, label, active, onClick }) => (
             <button onClick={() => onClick(id)} className={`w-full flex items-center gap-4 p-4 rounded-2xl transition-all duration-300 ${active === id ? 'active-tab shadow-xl translate-x-2' : 'hover:bg-slate-800/50 text-slate-500'}`}>
-                <span className="text-xl">{icon}</span>
-                <span className="hidden md:block font-black text-[9px] uppercase tracking-[0.2em]">{label}</span>
+                <span className="text-xl uppercase">{icon}</span>
+                <span className="hidden md:block font-black text-[9px] uppercase tracking-[0.2em] uppercase">{label}</span>
             </button>
         );
 
@@ -124,7 +120,6 @@
             const mapRef = useRef(null);
 
             useEffect(() => {
-                // KOREKSI TEKNIS: Mencegah re-inisialisasi
                 if (mapRef.current) return;
 
                 const map = L.map('map', { zoomControl: false }).setView([-6.126, 106.574], 13);
@@ -133,7 +128,6 @@
                 L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png').addTo(map);
                 L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-                // PRIORITAS 1: Loop data untuk marker dinamis
                 SURVEY_DATA.forEach(point => {
                     L.marker([point.lat, point.lng]).addTo(map)
                         .bindPopup(`<div style="font-family:'Sora'; padding:5px;">
@@ -158,41 +152,37 @@
                         <StatCard label="Coverage" value="14.2" sub="KM Sq Area" color="border-green-500" />
                         <StatCard label="Uptime" value="100%" sub="Cloud Engine" color="border-purple-500" />
                     </div>
-                    <div className="relative group">
-                        <div className="absolute -inset-1 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-[3rem] blur opacity-10 group-hover:opacity-20 transition duration-1000"></div>
-                        <div id="map" className="relative"></div>
-                    </div>
+                    <div id="map"></div>
                 </div>
             );
         };
 
         const StatCard = ({ label, value, sub, color }) => (
             <div className={`bg-white p-6 rounded-[2rem] border-t-4 ${color} shadow-sm transition-all hover:shadow-xl hover:-translate-y-2`}>
-                <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em]">{label}</p>
-                <h3 className="text-3xl font-black text-slate-800 mt-2 tracking-tighter">{value}</h3>
-                <p className="text-[9px] text-slate-400 font-bold mt-1 uppercase tracking-widest">{sub}</p>
+                <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] uppercase">{label}</p>
+                <h3 className="text-3xl font-black text-slate-800 mt-2 tracking-tighter uppercase">{value}</h3>
+                <p className="text-[9px] text-slate-400 font-bold mt-1 uppercase tracking-widest uppercase">{sub}</p>
             </div>
         );
 
         const Survey = ({ onSave }) => (
-            <div className="bg-white p-10 md:p-16 rounded-[3.5rem] max-w-3xl shadow-2xl border border-slate-100 mx-auto relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-40 h-40 bg-slate-50 rounded-full -mr-20 -mt-20"></div>
-                <div className="relative z-10">
-                    <h2 className="text-2xl font-black mb-2 text-slate-800 tracking-tighter uppercase italic">Data Acquisition</h2>
-                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-10">Kecamatan Sepatan - Field Report System</p>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div className="bg-white p-10 md:p-16 rounded-[3.5rem] max-w-3xl shadow-2xl border border-slate-100 mx-auto">
+                <h2 className="text-2xl font-black mb-2 text-slate-800 tracking-tighter uppercase italic">Data Acquisition</h2>
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-10 uppercase">Field Report System</p>
+                <div className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <InputField label="Target Coordinate" placeholder="-6.1234, 106.5678" />
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2">Category</label>
-                            <select className="w-full p-5 rounded-[1.5rem] bg-slate-50 border-none ring-2 ring-slate-100 focus:ring-yellow-400 outline-none font-bold text-xs appearance-none">
-                                <option>Traffic Congestion</option>
-                                <option>Drainage System</option>
-                                <option>Public Infrastructure</option>
+                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 uppercase">Category</label>
+                            <select className="w-full p-5 rounded-[1.5rem] bg-slate-50 border-none ring-2 ring-slate-100 focus:ring-yellow-400 outline-none font-bold text-xs">
+                                <option className="uppercase">Traffic Congestion</option>
+                                <option className="uppercase">Drainage System</option>
+                                <option className="uppercase">Public Infrastructure</option>
                             </select>
                         </div>
                     </div>
-                    <textarea className="w-full p-6 rounded-[1.5rem] bg-slate-50 border-none ring-2 ring-slate-100 focus:ring-yellow-400 outline-none font-bold text-xs mb-8" rows="4" placeholder="Input physical observation details..."></textarea>
-                    <button onClick={onSave} className="w-full bg-slate-900 text-yellow-400 font-black p-6 rounded-[1.5rem] shadow-[0_20px_40px_rgba(15,23,42,0.3)] uppercase tracking-[0.3em] text-[10px] hover:bg-slate-800 active:scale-95 transition-all">
+                    <textarea className="w-full p-6 rounded-[1.5rem] bg-slate-50 border-none ring-2 ring-slate-100 focus:ring-yellow-400 outline-none font-bold text-xs mb-8 uppercase" rows="4" placeholder="Input physical observation details..."></textarea>
+                    <button onClick={onSave} className="w-full bg-slate-900 text-yellow-400 font-black p-6 rounded-[1.5rem] shadow-xl uppercase tracking-[0.3em] text-[10px] uppercase hover:bg-slate-800 transition-all">
                         Execute Cloud Synchronization
                     </button>
                 </div>
@@ -201,8 +191,8 @@
 
         const InputField = ({ label, placeholder }) => (
             <div className="space-y-2">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2">{label}</label>
-                <input className="w-full p-5 rounded-[1.5rem] bg-slate-50 border-none ring-2 ring-slate-100 focus:ring-yellow-400 outline-none font-bold text-xs" placeholder={placeholder} />
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 uppercase">{label}</label>
+                <input className="w-full p-5 rounded-[1.5rem] bg-slate-50 border-none ring-2 ring-slate-100 focus:ring-yellow-400 outline-none font-bold text-xs uppercase" placeholder={placeholder} />
             </div>
         );
 
@@ -216,14 +206,11 @@
                 ].map((file, i) => (
                     <div key={i} className="bg-white p-8 rounded-[2.5rem] flex justify-between items-center shadow-sm hover:shadow-2xl transition-all cursor-pointer group border border-slate-50">
                         <div className="flex items-center gap-5">
-                            <div className="w-14 h-14 bg-slate-900 text-yellow-400 rounded-2xl flex items-center justify-center font-black text-xs group-hover:rotate-12 transition-all shadow-lg">{file.t}</div>
+                            <div className="w-14 h-14 bg-slate-900 text-yellow-400 rounded-2xl flex items-center justify-center font-black text-xs group-hover:rotate-12 transition-all uppercase">{file.t}</div>
                             <div>
-                                <p className="text-xs font-black text-slate-800 leading-none">{file.n}</p>
-                                <p className="text-[9px] text-slate-400 font-bold mt-2 uppercase tracking-widest italic">{file.s} • Secured Cloud</p>
+                                <p className="text-xs font-black text-slate-800 leading-none uppercase">{file.n}</p>
+                                <p className="text-[9px] text-slate-400 font-bold mt-2 uppercase tracking-widest italic uppercase">{file.s} • Secured Cloud</p>
                             </div>
-                        </div>
-                        <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center group-hover:bg-yellow-400 transition-all opacity-0 group-hover:opacity-100">
-                            <span className="text-xs">⬇️</span>
                         </div>
                     </div>
                 ))}
@@ -233,15 +220,10 @@
         const Team = () => (
             <div className="grid grid-cols-2 lg:grid-cols-3 gap-8">
                 {['Ambia', 'Irfan', 'Deny', 'Wira', 'Estu', 'Arga'].map((name, i) => (
-                    <div key={i} className="bg-white p-10 rounded-[3rem] text-center shadow-sm border border-slate-50 relative group overflow-hidden">
-                        <div className="absolute top-0 left-0 w-full h-2 bg-yellow-400 opacity-0 group-hover:opacity-100 transition-all"></div>
-                        <div className="w-20 h-20 bg-slate-900 text-yellow-400 rounded-[1.5rem] flex items-center justify-center text-xl font-black mx-auto mb-6 border-4 border-slate-50 shadow-2xl group-hover:scale-110 transition-transform">{name[0]}</div>
-                        <p className="text-sm font-black text-slate-800 uppercase tracking-tighter italic">{name} Mursalin</p>
-                        <p className="text-[9px] font-bold text-slate-400 mt-2 tracking-[0.3em] uppercase">Planning Division</p>
-                        <div className="mt-6 flex justify-center gap-2">
-                            <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                            <span className="text-[8px] font-black text-slate-300 uppercase tracking-widest leading-none">Available</span>
-                        </div>
+                    <div key={i} className="bg-white p-10 rounded-[3rem] text-center shadow-sm border border-slate-50 relative group">
+                        <div className="w-20 h-20 bg-slate-900 text-yellow-400 rounded-[1.5rem] flex items-center justify-center text-xl font-black mx-auto mb-6 border-4 border-slate-50 shadow-2xl group-hover:scale-110 transition-transform uppercase">{name[0]}</div>
+                        <p className="text-sm font-black text-slate-800 uppercase tracking-tighter italic uppercase">{name}</p>
+                        <p className="text-[9px] font-bold text-slate-400 mt-2 tracking-[0.3em] uppercase uppercase">Planning Division</p>
                     </div>
                 ))}
             </div>
