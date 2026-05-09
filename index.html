@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OPS MPT - Internal Platform</title>
+    <!-- Menggunakan Font Barlow agar tampilan profesional -->
+    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700;800&family=Barlow+Condensed:wght@700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        :root {
+            --navy: #0033A0;
+            --yellow: #FFC600;
+            --navy-dark: #001F6B;
+            --navy-light: #E8EDF7;
+        }
+        body { font-family: 'Barlow', sans-serif; background: #F8FAFC; margin: 0; padding: 0; color: #333; }
+        header { background: var(--navy); color: white; padding: 15px 20px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .card { background: white; border-radius: 12px; border: 1px solid var(--navy-light); padding: 16px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,51,160,0.05); }
+        .nav-bar { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid var(--navy-light); }
+        .nav-item { background: none; border: none; display: flex; flex-direction: column; align-items: center; color: #888; cursor: pointer; gap: 4px; }
+        .nav-item.active { color: var(--navy); font-weight: 700; }
+        .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; background: #E8EDF7; color: var(--navy); }
+        .progress-bar { height: 6px; background: #eee; border-radius: 3px; margin: 10px 0; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--navy), var(--yellow)); border-radius: 3px; }
+        input, textarea { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ddd; margin-top: 5px; box-sizing: border-box; }
+        button.submit-btn { background: var(--navy); color: white; border: none; width: 100%; padding: 12px; border-radius: 8px; font-weight: 700; cursor: pointer; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+
+        // Data dari Internal Context
+        const MEMBERS = [
+            { name: "Ambia", role: "Ketua", region: "Banten / Aceh", avatar: "AM" },
+            { name: "Irfan", role: "Anggota", region: "Sulsel", avatar: "IF" },
+            { name: "Deny", role: "Anggota", region: "Jatim", avatar: "DN" },
+            { name: "Wira", role: "Anggota", region: "Jatim", avatar: "WR" },
+            { name: "Estu", role: "Anggota", region: "Kaltim", avatar: "ES" },
+            { name: "Arga", role: "Anggota", region: "Jakarta", avatar: "AR" }
+        ];
+
+        const App = () => {
+            const [tab, setTab] = useState('home');
+
+            return (
+                <div>
+                    <header>
+                        <div style={{display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+                            <div>
+                                <div style={{fontSize: '18px', fontWeight: 800}}>OPS MPT</div>
+                                <div style={{fontSize: '10px', opacity: 0.8}}>INTERNAL PLATFORM v1.0</div>
+                            </div>
+                            <div style={{width:36, height:36, borderRadius:'50%', background:'var(--yellow)', color: 'var(--navy)', display:'flex', alignItems:'center', justifyContent:'center', fontWeight:800}}>AM</div>
+                        </div>
+                    </header>
+
+                    <main style={{padding: '20px', paddingBottom: '80px'}}>
+                        {tab === 'home' && <Home />}
+                        {tab === 'proyek' && <Proyek />}
+                        {tab === 'data' && <DataRepo />}
+                        {tab === 'survei' && <SurveiForm />}
+                        {tab === 'tim' && <Tim />}
+                    </main>
+
+                    <nav className="nav-bar">
+                        <NavItem id="home" icon="🏠" label="Home" active={tab} onClick={setTab} />
+                        <NavItem id="proyek" icon="📋" label="Proyek" active={tab} onClick={setTab} />
+                        <NavItem id="survei" icon="📍" label="Survei" active={tab} onClick={setTab} />
+                        <NavItem id="data" icon="🗂️" label="Data" active={tab} onClick={setTab} />
+                        <NavItem id="tim" icon="👥" label="Tim" active={tab} onClick={setTab} />
+                    </nav>
+                </div>
+            );
+        };
+
+        const NavItem = ({ id, icon, label, active, onClick }) => (
+            <button className={`nav-item ${active === id ? 'active' : ''}`} onClick={() => onClick(id)}>
+                <span style={{fontSize:'20px'}}>{icon}</span>
+                <span style={{fontSize:'10px'}}>{label}</span>
+            </button>
+        );
+
+        const Home = () => (
+            <div>
+                <h2 style={{color:'var(--navy)', fontSize:'20px'}}>Dashboard</h2>
+                <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'10px', marginBottom:'20px'}}>
+                    <div className="card" style={{textAlign:'center'}}>
+                        <div style={{fontSize:'24px', fontWeight:800, color:'var(--navy)'}}>7</div>
+                        <div style={{fontSize:'10px', color:'#888'}}>Anggota Aktif</div>
+                    </div>
+                    <div className="card" style={{textAlign:'center'}}>
+                        <div style={{fontSize:'24px', fontWeight:800, color:'var(--navy)'}}>65%</div>
+                        <div style={{fontSize:'10px', color:'#888'}}>Progres Kajian</div>
+                    </div>
+                </div>
+                <h3 style={{fontSize:'14px', color:'var(--navy)'}}>PROYEK AKTIF</h3>
+                <div className="card">
+                    <div style={{fontSize:'14px', fontWeight:700}}>Kajian Wilayah Kec. Sepatan</div>
+                    <div className="progress-bar"><div className="progress-fill" style={{width:'65%'}}></div></div>
+                    <div style={{fontSize:'11px', color:'var(--navy)', fontWeight:600}}>Status: Berjalan</div>
+                </div>
+            </div>
+        );
+
+        const Proyek = () => (
+            <div>
+                <h2 style={{color:'var(--navy)', fontSize:'20px'}}>Proyek</h2>
+                <div className="card">
+                    <span className="badge">OPS-MPT/2026/001</span>
+                    <div style={{fontSize:'15px', fontWeight:700, marginTop:'8px'}}>Kajian Permasalahan Wilayah Kec. Sepatan</div>
+                    <p style={{fontSize:'12px', color:'#666'}}>Fokus: Infrastruktur & Fasilitas Sosial Sepatan.</p>
+                </div>
+            </div>
+        );
+
+        const SurveiForm = () => (
+            <div>
+                <h2 style={{color:'var(--navy)', fontSize:'20px'}}>Input Lapangan</h2>
+                <div className="card">
+                    <label style={{fontSize:'12px', fontWeight:700}}>Lokasi Temuan</label>
+                    <input type="text" placeholder="Contoh: Jl. Raya Sepatan" />
+                    <label style={{fontSize:'12px', fontWeight:700, display:'block', marginTop:'10px'}}>Jenis Temuan</label>
+                    <input type="text" placeholder="Kemacetan / Banjir / PKL" />
+                    <label style={{fontSize:'12px', fontWeight:700, display:'block', marginTop:'10px'}}>Catatan</label>
+                    <textarea rows="3"></textarea>
+                    <button className="submit-btn" onClick={() => alert('Data berhasil disimpan ke sistem!')}>SUBMIT DATA</button>
+                </div>
+            </div>
+        );
+
+        const DataRepo = () => (
+            <div>
+                <h2 style={{color:'var(--navy)', fontSize:'20px'}}>Repository Data</h2>
+                {[
+                    {n: "Kependudukan Kab. Tangerang 2025", t: "XLSX"},
+                    {n: "Peta Administrasi Kab. Tangerang", t: "SHP"},
+                    {n: "RTRW Kab. Tangerang", t: "PDF"}
+                ].map((d, i) => (
+                    <div key={i} className="card" style={{display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+                        <div style={{fontSize:'13px', fontWeight:600}}>{d.n}</div>
+                        <div className="badge">{d.t}</div>
+                    </div>
+                ))}
+            </div>
+        );
+
+        const Tim = () => (
+            <div>
+                <h2 style={{color:'var(--navy)', fontSize:'20px'}}>Anggota Tim</h2>
+                <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'12px'}}>
+                    {MEMBERS.map((m, i) => (
+                        <div key={i} className="card" style={{textAlign:'center'}}>
+                            <div style={{width:40, height:40, borderRadius:'50%', background:'var(--navy-light)', color:'var(--navy)', margin:'0 auto 8px', display:'flex', alignItems:'center', justifyContent:'center', fontWeight:700}}>{m.avatar}</div>
+                            <div style={{fontSize:'14px', fontWeight:700}}>{m.name}</div>
+                            <div style={{fontSize:'10px', color:'#888'}}>{m.role}</div>
+                            <div style={{fontSize:'9px', color:'var(--navy)', marginTop:'4px'}}>{m.region}</div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        );
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
