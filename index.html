@@ -12,173 +12,267 @@
 
 <style>
 :root {
-  /* Colors */
+  /* Institutional Palette */
   --navy: #0033A0; --navy-dark: #001F6B; --navy-mid: #0047AB;
-  --yellow: #FFC600; --slate-700: #334155; --white: #ffffff;
+  --yellow: #FFC600; --slate-50: #f8fafc; --slate-100: #f1f5f9;
+  --slate-200: #e2e8f0; --slate-400: #94a3b8; --slate-600: #475569; --slate-700: #334155;
   
-  /* Institutional Depth Shadows */
-  --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
-  --shadow-md: 0 1px 2px rgba(0,0,0,0.04), 0 8px 24px rgba(0,51,160,0.04);
-  
-  /* Spacing Variables */
+  /* Spacing */
   --space-xs: 4px; --space-sm: 8px; --space-md: 16px; --space-lg: 24px; --space-xl: 32px;
+  
+  /* Depth Shadow */
+  --shadow-premium: 0 1px 2px rgba(0,0,0,0.04), 0 8px 24px rgba(0,51,160,0.04);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'Plus Jakarta Sans', sans-serif; color: var(--slate-700); height: 100dvh; overflow: hidden; background: #fff; }
+body { font-family: 'Plus Jakarta Sans', sans-serif; color: var(--slate-700); height: 100dvh; overflow: hidden; }
 
-/* Global Utilities */
-.screen { position: fixed; inset: 0; display: none; flex-direction: column; }
+/* ── GLOBALS ── */
+.screen { position: fixed; inset: 0; display: none; flex-direction: column; background: #fff; }
 .screen.active { display: flex; }
-.btn-primary { background: var(--navy); color: #fff; padding: 10px 20px; border-radius: 8px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; transition: all .2s; cursor: pointer; border: none; }
-.btn-primary:hover { background: var(--navy-dark); transform: translateY(-1px); box-shadow: var(--shadow-md); }
+button { cursor: pointer; border: none; font-family: inherit; }
 
-/* ── LANDING: OBSERVATORIUM ── */
-.landing-header { padding: var(--space-lg) var(--space-xl); border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; z-index: 100; }
-.hero-statement { margin-bottom: var(--space-lg); }
-.hero-statement h1 { font-family: 'Barlow Condensed'; font-weight: 900; font-size: 28px; line-height: 1.1; color: var(--navy); text-transform: uppercase; margin-bottom: var(--space-sm); }
-.hero-statement p { font-size: 11px; color: #64748b; line-height: 1.6; }
+/* ── SCREEN 1: LANDING / OBSERVATORY ── */
+.landing-header { padding: 20px 32px; border-bottom: 1px solid var(--slate-100); display: flex; justify-content: space-between; align-items: center; background: #fff; z-index: 10; }
+.brand { display: flex; align-items: center; gap: 12px; }
+.brand-logo { background: var(--navy); color: var(--yellow); padding: 6px 10px; border-radius: 8px; font-family: 'Barlow Condensed'; font-weight: 900; font-size: 14px; }
+.btn-login { background: var(--navy); color: #fff; padding: 10px 24px; border-radius: 8px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; transition: 0.2s; }
+.btn-login:hover { background: var(--navy-dark); transform: translateY(-1px); }
 
 .obs-body { flex: 1; display: flex; overflow: hidden; }
-.obs-sidebar { width: 320px; padding: var(--space-xl); border-right: 1px solid #f1f5f9; overflow-y: auto; }
-.obs-map-wrap { flex: 1; padding: var(--space-sm); position: relative; }
-#landing-map { height: 100%; width: 100%; border-radius: 16px; border: 1px solid #e2e8f0; }
+.obs-sidebar { width: 320px; border-right: 1px solid var(--slate-100); padding: var(--space-xl); overflow-y: auto; }
+.obs-hero h1 { font-family: 'Barlow Condensed'; font-size: 32px; font-weight: 900; color: var(--navy); text-transform: uppercase; line-height: 1; margin-bottom: var(--space-sm); }
+.obs-hero p { font-size: 12px; color: var(--slate-600); line-height: 1.6; margin-bottom: var(--space-lg); }
 
-/* ── APP PLATFORM ── */
-#screen-app { background: #f8fafc; flex-direction: row; }
+.activity-card { padding: var(--space-md); border-radius: 12px; background: var(--slate-50); border: 1px solid var(--slate-200); margin-bottom: var(--space-md); }
+.activity-card span { font-size: 9px; font-weight: 800; color: var(--navy-mid); text-transform: uppercase; }
+.activity-card p { font-size: 11px; margin-top: 4px; line-height: 1.5; }
+
+.obs-map-wrap { flex: 1; position: relative; padding: 12px; }
+#landing-map { height: 100%; width: 100%; border-radius: 16px; border: 1px solid var(--slate-200); }
+
+/* ── SCREEN 2: LOGIN ── */
+#screen-login { background: linear-gradient(135deg, var(--navy-dark), var(--navy-mid)); align-items: center; justify-content: center; }
+.login-card { background: #fff; padding: 40px; border-radius: 24px; width: 90%; max-width: 400px; box-shadow: 0 20px 50px rgba(0,0,0,0.2); text-align: center; }
+.google-btn { width: 100%; padding: 14px; background: #fff; border: 1px solid var(--slate-200); border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 12px; font-weight: 600; color: var(--slate-700); margin-top: 24px; transition: 0.2s; }
+.google-btn:hover { background: var(--slate-50); box-shadow: var(--shadow-premium); }
+
+/* ── SCREEN 3: APP PLATFORM ── */
+#screen-app { background: #F0F4FF; flex-direction: row; }
 .app-sidebar { width: 240px; background: var(--navy-dark); color: #fff; display: flex; flex-direction: column; }
-.nav-item { padding: 12px 20px; font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.6); cursor: pointer; display: flex; align-items: center; gap: 12px; border-radius: 8px; margin: 2px 12px; transition: 0.2s; }
+.sidebar-header { padding: 24px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+.nav-item { padding: 12px 20px; margin: 4px 12px; border-radius: 8px; color: rgba(255,255,255,0.5); font-size: 13px; font-weight: 600; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 12px; }
 .nav-item:hover { background: rgba(255,255,255,0.05); color: #fff; }
-.nav-item.active { background: rgba(255,198,0,0.15); color: var(--yellow); }
+.nav-item.active { background: rgba(255,198,0,0.12); color: var(--yellow); }
 
 .app-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.app-topbar { height: 60px; background: #fff; border-bottom: 1px solid var(--slate-200); display: flex; align-items: center; padding: 0 24px; box-shadow: var(--shadow-premium); }
 .app-content { flex: 1; padding: var(--space-lg); overflow-y: auto; }
-.card { background: #fff; border-radius: 12px; border: 1px solid #e2e8f0; padding: var(--space-lg); box-shadow: var(--shadow-md); margin-bottom: var(--space-lg); }
 
-/* Responsive */
-@media(max-width: 768px) { .obs-sidebar, .app-sidebar { display: none; } }
+/* Dashboard UI */
+.stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: var(--space-md); margin-bottom: var(--space-lg); }
+.stat-card { background: #fff; padding: 20px; border-radius: 12px; border: 1px solid var(--slate-200); box-shadow: var(--shadow-premium); }
+.stat-card h4 { font-size: 10px; color: var(--slate-400); text-transform: uppercase; letter-spacing: 1px; }
+.stat-card .val { font-family: 'Barlow Condensed'; font-size: 28px; font-weight: 900; color: var(--navy); }
+
+.card { background: #fff; border-radius: 16px; border: 1px solid var(--slate-200); padding: var(--space-lg); box-shadow: var(--shadow-premium); margin-bottom: var(--space-lg); }
+.stitle { font-size: 11px; font-weight: 800; color: var(--navy); text-transform: uppercase; letter-spacing: 1px; margin-bottom: var(--space-md); }
+
+/* Responsive Mobile */
+.bottom-nav { display: none; position: fixed; bottom: 0; width: 100%; background: #fff; border-top: 1px solid var(--slate-200); height: 60px; z-index: 100; }
+@media(max-width: 768px) {
+  .obs-sidebar, .app-sidebar { display: none; }
+  .bottom-nav { display: flex; justify-content: space-around; align-items: center; }
+}
 </style>
 </head>
 <body>
 
 <div class="screen active" id="screen-landing">
-    <header class="landing-header">
-        <div style="display:flex; align-items:center; gap:12px;">
-            <div style="background:var(--navy); color:var(--yellow); padding:6px 10px; border-radius:6px; font-family:'Barlow Condensed'; font-weight:900;">OPS</div>
-            <div>
-                <div style="font-weight:800; font-size:14px; color:var(--navy);">OPS MPT</div>
-                <div style="font-size:9px; font-weight:700; color:#94a3b8; text-transform:uppercase; letter-spacing:0.1em;">Masyarakat Perencana Terbuka</div>
-            </div>
-        </div>
-        <nav style="display:flex; gap:24px; align-items:center;">
-            <button class="btn-primary" onclick="showScreen('screen-login')">Masuk Platform →</button>
-        </nav>
-    </header>
-
-    <div class="obs-body">
-        <aside class="obs-sidebar">
-            <div class="hero-statement">
-                <h1>Observatorium Kolektif<br>Perencanaan Wilayah</h1>
-                <p>Platform kolaboratif mahasiswa dan praktisi untuk observasi, dokumentasi, dan analisis spasial wilayah Indonesia.</p>
-            </div>
-            
-            <div style="margin-top:var(--space-xl);">
-                <h3 style="font-size:10px; text-transform:uppercase; color:#94a3b8; margin-bottom:12px; letter-spacing:0.1em;">Aktivitas Terkini</h3>
-                <div style="border-left:2px solid #f1f5f9; padding-left:16px;">
-                    <p style="font-size:10px; font-weight:800; color:var(--navy);">WILAYAH BANTEN</p>
-                    <p style="font-size:11px; margin-top:4px;">Survey primer Simpang Kedaung (Studio Sepatan) telah divalidasi oleh pembimbing.</p>
-                </div>
-            </div>
-        </aside>
-        <main class="obs-map-wrap">
-            <div id="landing-map"></div>
-        </main>
+  <header class="landing-header">
+    <div class="brand">
+      <div class="brand-logo">OPS</div>
+      <div>
+        <div style="font-weight:800; font-size:15px; color:var(--navy);">OPS MPT</div>
+        <div style="font-size:9px; color:var(--slate-400); text-transform:uppercase; font-weight:700;">Observatorium Kolektif</div>
+      </div>
     </div>
+    <button class="btn-login" onclick="showScreen('screen-login')">Masuk Platform →</button>
+  </header>
+
+  <div class="obs-body">
+    <aside class="obs-sidebar">
+      <div class="obs-hero">
+        <h1>Observatorium<br>Spasial Kolektif</h1>
+        <p>Platform pendokumentasian wilayah oleh mahasiswa dan alumni PWK Universitas Terbuka untuk perencanaan yang inklusif.</p>
+      </div>
+
+      <div class="stitle">Laporan Lapangan</div>
+      <div class="activity-card">
+        <span>Wilayah Banten</span>
+        <p>Inventarisasi drainase Pasar Sepatan telah diverifikasi oleh tim kurator.</p>
+      </div>
+      <div class="activity-card">
+        <span>Wilayah Aceh</span>
+        <p>Penyusunan basis data logistik regional Lhokseumawe fase awal.</p>
+      </div>
+    </aside>
+
+    <main class="obs-map-wrap">
+      <div id="landing-map"></div>
+    </main>
+  </div>
 </div>
 
-<div class="screen" id="screen-login" style="background:var(--navy-dark); align-items:center; justify-content:center;">
-    <div style="background:#fff; padding:40px; border-radius:24px; width:100%; max-width:400px; text-align:center;">
-        <h2 style="margin-bottom:24px;">Akses Internal</h2>
-        <button class="btn-primary" style="width:100%; padding:14px;" onclick="showScreen('screen-app')">Masuk dengan Google</button>
-        <p onclick="showScreen('screen-landing')" style="margin-top:20px; font-size:11px; color:#94a3b8; cursor:pointer;">← Kembali</p>
-    </div>
+<div class="screen" id="screen-login">
+  <div class="login-card">
+    <div class="brand-logo" style="margin: 0 auto 16px; width: fit-content; padding: 12px 20px; font-size: 24px;">OPS</div>
+    <h2 style="font-family: 'Barlow Condensed'; font-size: 24px; color: var(--navy);">Masyarakat Perencana Terbuka</h2>
+    <p style="font-size: 12px; color: var(--slate-500); margin-top: 8px;">Gunakan akun SSO untuk akses repositori data wilayah.</p>
+    
+    <button class="google-btn" onclick="showScreen('screen-app')">
+      <img src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" width="18" alt="G">
+      Masuk dengan Google
+    </button>
+    
+    <p style="margin-top: 32px; font-size: 11px; color: var(--slate-400); cursor: pointer;" onclick="showScreen('screen-landing')">← Kembali ke Observatorium</p>
+  </div>
 </div>
 
 <div class="screen" id="screen-app">
-    <aside class="app-sidebar">
-        <div style="padding:24px; border-bottom:1px solid rgba(255,255,255,0.1);">
-            <p style="font-family:'Barlow Condensed'; font-weight:900; letter-spacing:1px; color:var(--yellow);">PLATFORM INTERNAL</p>
-        </div>
-        <nav style="margin-top:16px; flex:1;">
-            <div class="nav-item active" data-tab="tab-dashboard" onclick="switchTab('tab-dashboard')">Dashboard</div>
-            <div class="nav-item" data-tab="tab-projects" onclick="switchTab('tab-projects')">Kajian Wilayah</div>
-            <div class="nav-item" data-tab="tab-members" onclick="switchTab('tab-members')">Jejaring Anggota</div>
-        </nav>
-        <div style="padding:20px; font-size:10px; color:rgba(255,255,255,0.3); border-top:1px solid rgba(255,255,255,0.1);" onclick="showScreen('screen-landing')">Keluar Platform</div>
-    </aside>
+  <aside class="app-sidebar">
+    <div class="sidebar-header">
+      <div style="font-family:'Barlow Condensed'; font-weight:900; color:var(--yellow); font-size:18px;">PLATFORM OPS</div>
+      <div style="font-size:9px; color:rgba(255,255,255,0.4);">VERSI 1.0.1 ALPHA</div>
+    </div>
     
-    <main class="app-main">
-        <header style="height:60px; background:#fff; border-bottom:1px solid #e2e8f0; display:flex; align-items:center; padding:0 24px;">
-            <h2 id="page-title" style="font-size:14px; font-weight:800;">Ringkasan Observasi</h2>
-        </header>
-        <div class="app-content">
-            <div id="tab-dashboard" class="apage active">
-                <div class="card" style="padding:10px;"><div id="app-map" style="height:300px; border-radius:8px;"></div></div>
-                <div class="card"><h3>Statistik Wilayah</h3><p style="font-size:12px; color:#64748b;">Menunggu sinkronisasi data lapangan...</p></div>
-            </div>
-            <div id="tab-projects" class="apage" style="display:none;">
-                <div class="card"><h3>Daftar Proyek</h3><p>Repositori Kajian Sepatan & Aceh.</p></div>
-            </div>
+    <nav style="margin-top: 16px; flex: 1;">
+      <div class="nav-item active" data-tab="tab-dashboard" onclick="switchTab('tab-dashboard')">Dashboard</div>
+      <div class="nav-item" data-tab="tab-projects" onclick="switchTab('tab-projects')">Kajian Wilayah</div>
+      <div class="nav-item" data-tab="tab-members" onclick="switchTab('tab-members')">Jejaring Anggota</div>
+    </nav>
+
+    <div class="nav-item" style="margin-top:auto; margin-bottom: 24px; color: #ff8a8a;" onclick="showScreen('screen-landing')">Keluar</div>
+  </aside>
+
+  <main class="app-main">
+    <header class="app-topbar">
+      <h2 id="page-title" style="font-size:14px; font-weight:800; color:var(--navy);">Dashboard Analisis</h2>
+    </header>
+
+    <div class="app-content">
+      <div id="tab-dashboard" class="apage active">
+        <div class="stat-grid">
+          <div class="stat-card"><h4>Simpul Aktif</h4><div class="val">05</div></div>
+          <div class="stat-card"><h4>Kajian Selesai</h4><div class="val">12</div></div>
+          <div class="stat-card"><h4>Total Anggota</h4><div class="val">48</div></div>
         </div>
-    </main>
+        
+        <div class="card" style="padding: 10px;">
+          <div id="app-map" style="height: 350px; border-radius: 12px;"></div>
+        </div>
+      </div>
+
+      <div id="tab-projects" class="apage" style="display:none;">
+        <div class="stitle">Kajian Wilayah Berjalan</div>
+        <div class="card">
+          <h3 style="font-size: 15px; margin-bottom: 8px;">Studio Perencanaan Sepatan</h3>
+          <p style="font-size: 12px; color: var(--slate-600);">Status: Tahap Analisis Spasial (GIS)</p>
+          <div style="height:6px; background:#f1f5f9; border-radius:10px; margin-top:12px;">
+            <div style="width:75%; height:100%; background:var(--navy); border-radius:10px;"></div>
+          </div>
+        </div>
+        <div class="card">
+          <h3 style="font-size: 15px; margin-bottom: 8px;">Kajian Logistik Regional Aceh</h3>
+          <p style="font-size: 12px; color: var(--slate-600);">Status: Pengumpulan Data Sekunder</p>
+          <div style="height:6px; background:#f1f5f9; border-radius:10px; margin-top:12px;">
+            <div style="width:30%; height:100%; background:var(--navy); border-radius:10px;"></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="tab-members" class="apage" style="display:none;">
+        <div class="stitle">Direktori Anggota Kolektif</div>
+        <div class="card" style="display: flex; align-items: center; gap: 16px;">
+          <div style="width:40px; height:40px; border-radius:50%; background:var(--navy); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800;">AM</div>
+          <div>
+            <div style="font-weight: 700; font-size: 14px;">Ambia Mursalin</div>
+            <div style="font-size: 11px; color: var(--slate-400);">Simpul Banten • Admin</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <nav class="bottom-nav">
+    <div onclick="switchTab('tab-dashboard')" style="font-size:10px; font-weight:700;">Dashboard</div>
+    <div onclick="switchTab('tab-projects')" style="font-size:10px; font-weight:700;">Kajian</div>
+    <div onclick="switchTab('tab-members')" style="font-size:10px; font-weight:700;">Jejaring</div>
+  </nav>
 </div>
 
 <script>
 let landingMap, appMap;
 
+/* ── SWITCH SCREEN ── */
 function showScreen(screenId) {
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.getElementById(screenId).classList.add('active');
-    
-    if(screenId === 'screen-landing') {
-        if(!landingMap) initLandingMap();
-        setTimeout(() => landingMap.invalidateSize(), 200);
-    }
-    if(screenId === 'screen-app') {
-        if(!appMap) initAppMap();
-        setTimeout(() => appMap.invalidateSize(), 200);
-    }
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(screenId).classList.add('active');
+
+  if(screenId === 'screen-landing') {
+    if(!landingMap) initLandingMap();
+    setTimeout(() => landingMap.invalidateSize(), 200);
+  }
+  if(screenId === 'screen-app') {
+    if(!appMap) initAppMap();
+    setTimeout(() => {
+        appMap.invalidateSize();
+        switchTab('tab-dashboard');
+    }, 200);
+  }
 }
 
+/* ── SWITCH TABS (INTERNAL APP) ── */
+function switchTab(tabId) {
+  // Hide all pages
+  document.querySelectorAll('.apage').forEach(p => p.style.display = 'none');
+  // Show target page
+  document.getElementById(tabId).style.display = 'block';
+
+  // Update Nav Items
+  document.querySelectorAll('.nav-item').forEach(i => {
+    i.classList.toggle('active', i.dataset.tab === tabId);
+  });
+
+  // Update Title
+  const titles = { 'tab-dashboard': 'Dashboard Analisis', 'tab-projects': 'Repositori Kajian', 'tab-members': 'Direktori Jejaring' };
+  document.getElementById('page-title').innerText = titles[tabId];
+
+  // Map Fix if Dashboard
+  if(tabId === 'tab-dashboard' && appMap) {
+    setTimeout(() => appMap.invalidateSize(), 100);
+  }
+}
+
+/* ── MAP INIT ── */
 function initLandingMap() {
-    landingMap = L.map('landing-map', { zoomControl: false, attributionControl: false }).setView([-2.5, 118], 5);
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png').addTo(landingMap);
-    L.marker([-6.126, 106.574]).addTo(landingMap).bindPopup('Simpul Banten');
+  landingMap = L.map('landing-map', { zoomControl: false, attributionControl: false }).setView([-2.5, 118], 5);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png').addTo(landingMap);
+  
+  // Example Marker
+  L.marker([-6.126, 106.574]).addTo(landingMap).bindPopup('<b>Simpul Banten</b><br>Kajian Sepatan Berjalan');
 }
 
 function initAppMap() {
-    if(appMap) return;
-    appMap = L.map('app-map', { zoomControl: false, attributionControl: false }).setView([-6.126, 106.574], 12);
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png').addTo(appMap);
+  if(appMap) return;
+  appMap = L.map('app-map', { zoomControl: false, attributionControl: false }).setView([-6.126, 106.574], 12);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png').addTo(appMap);
+  L.circle([-6.126, 106.574], { radius: 2000, color: '#0033A0', fillOpacity: 0.1 }).addTo(appMap);
 }
 
-function switchTab(tabId) {
-    // UI Update
-    document.querySelectorAll('.apage').forEach(p => p.style.display = 'none');
-    document.getElementById(tabId).style.display = 'block';
-    
-    // Nav Update (Safe Scalable Method)
-    document.querySelectorAll('.nav-item').forEach(i => {
-        i.classList.toggle('active', i.dataset.tab === tabId);
-    });
-
-    if(tabId === 'tab-dashboard' && appMap) {
-        setTimeout(() => appMap.invalidateSize(), 100);
-    }
-}
-
-// Initial Load
+// Start
 window.onload = () => { initLandingMap(); };
 </script>
+
 </body>
 </html>
