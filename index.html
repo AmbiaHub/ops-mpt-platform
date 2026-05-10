@@ -1,177 +1,184 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OPS MPT - Kolektif Perencanaan</title>
-    
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
-    
-    <style>
-        :root { 
-            --mpt-blue: #0047AB; 
-            --slate-700: #334155;
-        }
-        
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background-color: #ffffff; 
-            color: var(--slate-700); 
-            height: 100dvh;
-            overflow: hidden;
-        }
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>OPS MPT · Observatorium Perencanaan Wilayah Kolektif</title>
 
-        /* Gaya Editorial & Akademik */
-        .academic-border { border: 1px solid #e2e8f0; }
-        .sidebar-title { letter-spacing: 0.05em; color: #94a3b8; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; }
-        
-        #map { 
-            height: 100%; 
-            width: 100%; 
-            background: #f8fafc;
-            border-radius: 0.75rem;
-        }
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Barlow+Condensed:wght@700;900&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-        /* Marker Statis & Sederhana (Institutional Safe) */
-        .mpt-dot {
-            width: 10px;
-            height: 10px;
-            background: var(--mpt-blue);
-            border: 2px solid white;
-            border-radius: 50%;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
+<style>
+:root {
+  /* Colors */
+  --navy: #0033A0; --navy-dark: #001F6B; --navy-mid: #0047AB;
+  --yellow: #FFC600; --slate-700: #334155; --white: #ffffff;
+  
+  /* Institutional Depth Shadows */
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 1px 2px rgba(0,0,0,0.04), 0 8px 24px rgba(0,51,160,0.04);
+  
+  /* Spacing Variables */
+  --space-xs: 4px; --space-sm: 8px; --space-md: 16px; --space-lg: 24px; --space-xl: 32px;
+}
 
-        .scroll-hide::-webkit-scrollbar { display: none; }
-    </style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Plus Jakarta Sans', sans-serif; color: var(--slate-700); height: 100dvh; overflow: hidden; background: #fff; }
+
+/* Global Utilities */
+.screen { position: fixed; inset: 0; display: none; flex-direction: column; }
+.screen.active { display: flex; }
+.btn-primary { background: var(--navy); color: #fff; padding: 10px 20px; border-radius: 8px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; transition: all .2s; cursor: pointer; border: none; }
+.btn-primary:hover { background: var(--navy-dark); transform: translateY(-1px); box-shadow: var(--shadow-md); }
+
+/* ── LANDING: OBSERVATORIUM ── */
+.landing-header { padding: var(--space-lg) var(--space-xl); border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; z-index: 100; }
+.hero-statement { margin-bottom: var(--space-lg); }
+.hero-statement h1 { font-family: 'Barlow Condensed'; font-weight: 900; font-size: 28px; line-height: 1.1; color: var(--navy); text-transform: uppercase; margin-bottom: var(--space-sm); }
+.hero-statement p { font-size: 11px; color: #64748b; line-height: 1.6; }
+
+.obs-body { flex: 1; display: flex; overflow: hidden; }
+.obs-sidebar { width: 320px; padding: var(--space-xl); border-right: 1px solid #f1f5f9; overflow-y: auto; }
+.obs-map-wrap { flex: 1; padding: var(--space-sm); position: relative; }
+#landing-map { height: 100%; width: 100%; border-radius: 16px; border: 1px solid #e2e8f0; }
+
+/* ── APP PLATFORM ── */
+#screen-app { background: #f8fafc; flex-direction: row; }
+.app-sidebar { width: 240px; background: var(--navy-dark); color: #fff; display: flex; flex-direction: column; }
+.nav-item { padding: 12px 20px; font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.6); cursor: pointer; display: flex; align-items: center; gap: 12px; border-radius: 8px; margin: 2px 12px; transition: 0.2s; }
+.nav-item:hover { background: rgba(255,255,255,0.05); color: #fff; }
+.nav-item.active { background: rgba(255,198,0,0.15); color: var(--yellow); }
+
+.app-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.app-content { flex: 1; padding: var(--space-lg); overflow-y: auto; }
+.card { background: #fff; border-radius: 12px; border: 1px solid #e2e8f0; padding: var(--space-lg); box-shadow: var(--shadow-md); margin-bottom: var(--space-lg); }
+
+/* Responsive */
+@media(max-width: 768px) { .obs-sidebar, .app-sidebar { display: none; } }
+</style>
 </head>
-<body class="flex flex-col">
+<body>
 
-    <header class="border-b border-slate-100 px-8 py-4 flex justify-between items-center bg-white">
-        <div class="flex items-center gap-4">
-            <div class="font-bold text-blue-700 tracking-tighter text-lg">OPS MPT</div>
-            <div class="h-4 w-[1px] bg-slate-200"></div>
-            <p class="text-[10px] text-slate-400 font-medium tracking-wide uppercase">Masyarakat Perencana Terbuka</p>
+<div class="screen active" id="screen-landing">
+    <header class="landing-header">
+        <div style="display:flex; align-items:center; gap:12px;">
+            <div style="background:var(--navy); color:var(--yellow); padding:6px 10px; border-radius:6px; font-family:'Barlow Condensed'; font-weight:900;">OPS</div>
+            <div>
+                <div style="font-weight:800; font-size:14px; color:var(--navy);">OPS MPT</div>
+                <div style="font-size:9px; font-weight:700; color:#94a3b8; text-transform:uppercase; letter-spacing:0.1em;">Masyarakat Perencana Terbuka</div>
+            </div>
         </div>
-        <nav class="flex gap-8 text-[10px] font-semibold uppercase tracking-widest text-slate-500">
-            <a href="#" class="text-blue-700">Observatorium</a>
-            <a href="#" class="hover:text-blue-700">Arsip Kajian</a>
-            <a href="#" class="hover:text-blue-700">Jejaring</a>
+        <nav style="display:flex; gap:24px; align-items:center;">
+            <button class="btn-primary" onclick="showScreen('screen-login')">Masuk Platform →</button>
         </nav>
     </header>
 
-    <main class="flex-1 flex flex-col lg:flex-row gap-6 p-6 bg-white">
-        
-        <aside class="w-full lg:w-72 flex flex-col gap-6 overflow-y-auto scroll-hide">
+    <div class="obs-body">
+        <aside class="obs-sidebar">
+            <div class="hero-statement">
+                <h1>Observatorium Kolektif<br>Perencanaan Wilayah</h1>
+                <p>Platform kolaboratif mahasiswa dan praktisi untuk observasi, dokumentasi, dan analisis spasial wilayah Indonesia.</p>
+            </div>
             
-            <section>
-                <h2 class="sidebar-title mb-3">Fokus Observasi</h2>
-                <div class="p-4 bg-slate-50 rounded-xl academic-border">
-                    <p class="text-[11px] leading-relaxed text-slate-600">
-                        Pendokumentasian spasial kolektif terhadap isu drainase, mobilitas, dan infrastruktur wilayah secara mandiri dan terukur.
-                    </p>
+            <div style="margin-top:var(--space-xl);">
+                <h3 style="font-size:10px; text-transform:uppercase; color:#94a3b8; margin-bottom:12px; letter-spacing:0.1em;">Aktivitas Terkini</h3>
+                <div style="border-left:2px solid #f1f5f9; padding-left:16px;">
+                    <p style="font-size:10px; font-weight:800; color:var(--navy);">WILAYAH BANTEN</p>
+                    <p style="font-size:11px; margin-top:4px;">Survey primer Simpang Kedaung (Studio Sepatan) telah divalidasi oleh pembimbing.</p>
                 </div>
-            </section>
-
-            <section class="flex-1">
-                <h2 class="sidebar-title mb-4">Catatan Aktivitas</h2>
-                <div class="space-y-5">
-                    <div class="group">
-                        <p class="text-[10px] font-bold text-blue-800">Wilayah Banten</p>
-                        <p class="text-[11px] text-slate-600 mt-1">Dokumentasi primer Simpang Kedaung (Studio Sepatan) divalidasi oleh pembimbing.</p>
-                        <p class="text-[9px] text-slate-400 mt-1">Mei 2026</p>
-                    </div>
-                    <div class="group">
-                        <p class="text-[10px] font-bold text-blue-800">Wilayah Aceh</p>
-                        <p class="text-[11px] text-slate-600 mt-1">Inventarisasi data sekunder simpul logistik regional tahap awal.</p>
-                        <p class="text-[9px] text-slate-400 mt-1">Mei 2026</p>
-                    </div>
-                    <div class="group">
-                        <p class="text-[10px] font-bold text-blue-800">Kolektif</p>
-                        <p class="text-[11px] text-slate-600 mt-1">Sinkronisasi repositori laporan digital antar simpul wilayah.</p>
-                        <p class="text-[9px] text-slate-400 mt-1">April 2026</p>
-                    </div>
-                </div>
-            </section>
-
-            <section class="pt-4 border-t border-slate-100">
-                <p class="text-[9px] font-bold text-slate-400 leading-tight italic">
-                    "Merencanakan Kehidupan Bersama melalui kolaborasi terbuka."
-                </p>
-            </section>
+            </div>
         </aside>
+        <main class="obs-map-wrap">
+            <div id="landing-map"></div>
+        </main>
+    </div>
+</div>
 
-        <section class="flex-1 academic-border p-1 rounded-xl relative">
-            <div id="map"></div>
-            
-            <div class="absolute top-6 left-6 z-[1000] flex flex-col gap-2">
-                <div class="bg-white/90 backdrop-blur px-4 py-3 rounded-lg academic-border shadow-sm">
-                    <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1">Cakupan Wilayah</p>
-                    <h3 class="text-xs font-bold text-slate-700">Basis Observasi Awal</h3>
-                </div>
-                <div class="flex gap-2">
-                    <button class="bg-white px-3 py-1.5 rounded border border-slate-200 text-[9px] font-bold text-slate-600 uppercase hover:bg-slate-50 transition">Peta Tematik</button>
-                    <button class="bg-white px-3 py-1.5 rounded border border-slate-200 text-[9px] font-bold text-slate-600 uppercase hover:bg-slate-50 transition">Data Spasial</button>
-                </div>
-            </div>
+<div class="screen" id="screen-login" style="background:var(--navy-dark); align-items:center; justify-content:center;">
+    <div style="background:#fff; padding:40px; border-radius:24px; width:100%; max-width:400px; text-align:center;">
+        <h2 style="margin-bottom:24px;">Akses Internal</h2>
+        <button class="btn-primary" style="width:100%; padding:14px;" onclick="showScreen('screen-app')">Masuk dengan Google</button>
+        <p onclick="showScreen('screen-landing')" style="margin-top:20px; font-size:11px; color:#94a3b8; cursor:pointer;">← Kembali</p>
+    </div>
+</div>
 
-            <div class="absolute bottom-8 right-8 z-[1000] bg-white/90 backdrop-blur p-4 rounded-lg academic-border shadow-sm">
-                <div class="flex items-center gap-3">
-                    <div class="mpt-dot"></div>
-                    <span class="text-[9px] font-bold text-slate-500 uppercase tracking-tighter">Basis Simpul Wilayah</span>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <footer class="border-t border-slate-100 px-8 py-3 flex justify-between items-center bg-white">
-        <p class="text-[9px] font-medium text-slate-400 tracking-wider">
-            Laboratorium Perencanaan Wilayah Kolektif • Alumni & Mahasiswa PWK UT
-        </p>
-        <div class="flex items-center gap-2">
-            <div class="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
-            <span class="text-[9px] font-bold text-blue-700 uppercase">Observasi Berjalan</span>
+<div class="screen" id="screen-app">
+    <aside class="app-sidebar">
+        <div style="padding:24px; border-bottom:1px solid rgba(255,255,255,0.1);">
+            <p style="font-family:'Barlow Condensed'; font-weight:900; letter-spacing:1px; color:var(--yellow);">PLATFORM INTERNAL</p>
         </div>
-    </footer>
+        <nav style="margin-top:16px; flex:1;">
+            <div class="nav-item active" data-tab="tab-dashboard" onclick="switchTab('tab-dashboard')">Dashboard</div>
+            <div class="nav-item" data-tab="tab-projects" onclick="switchTab('tab-projects')">Kajian Wilayah</div>
+            <div class="nav-item" data-tab="tab-members" onclick="switchTab('tab-members')">Jejaring Anggota</div>
+        </nav>
+        <div style="padding:20px; font-size:10px; color:rgba(255,255,255,0.3); border-top:1px solid rgba(255,255,255,0.1);" onclick="showScreen('screen-landing')">Keluar Platform</div>
+    </aside>
+    
+    <main class="app-main">
+        <header style="height:60px; background:#fff; border-bottom:1px solid #e2e8f0; display:flex; align-items:center; padding:0 24px;">
+            <h2 id="page-title" style="font-size:14px; font-weight:800;">Ringkasan Observasi</h2>
+        </header>
+        <div class="app-content">
+            <div id="tab-dashboard" class="apage active">
+                <div class="card" style="padding:10px;"><div id="app-map" style="height:300px; border-radius:8px;"></div></div>
+                <div class="card"><h3>Statistik Wilayah</h3><p style="font-size:12px; color:#64748b;">Menunggu sinkronisasi data lapangan...</p></div>
+            </div>
+            <div id="tab-projects" class="apage" style="display:none;">
+                <div class="card"><h3>Daftar Proyek</h3><p>Repositori Kajian Sepatan & Aceh.</p></div>
+            </div>
+        </div>
+    </main>
+</div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const map = L.map('map', { 
-                zoomControl: false, 
-                attributionControl: false 
-            }).setView([-2.5, 118], 5);
+<script>
+let landingMap, appMap;
 
-            // Basemap Abu-abu Netral (Diterima secara akademik)
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {}).addTo(map);
+function showScreen(screenId) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(screenId).classList.add('active');
+    
+    if(screenId === 'screen-landing') {
+        if(!landingMap) initLandingMap();
+        setTimeout(() => landingMap.invalidateSize(), 200);
+    }
+    if(screenId === 'screen-app') {
+        if(!appMap) initAppMap();
+        setTimeout(() => appMap.invalidateSize(), 200);
+    }
+}
 
-            const simpulAwal = [
-                { pos: [4.695, 96.749], nama: "Simpul Aceh", desk: "Observasi Logistik Regional" },
-                { pos: [-6.126, 106.574], nama: "Simpul Banten", desk: "Observasi Mobilitas & Infrastruktur" },
-                { pos: [-7.536, 112.238], nama: "Simpul Jawa Timur", desk: "Kajian Kawasan Industri" },
-                { pos: [-5.147, 119.432], nama: "Simpul Sulawesi Selatan", desk: "Studio Perencanaan Wilayah" },
-                { pos: [-3.316, 114.590], nama: "Simpul Kalimantan Selatan", desk: "Kajian Lingkungan Terencana" }
-            ];
+function initLandingMap() {
+    landingMap = L.map('landing-map', { zoomControl: false, attributionControl: false }).setView([-2.5, 118], 5);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png').addTo(landingMap);
+    L.marker([-6.126, 106.574]).addTo(landingMap).bindPopup('Simpul Banten');
+}
 
-            const dotIcon = L.divIcon({
-                className: 'mpt-dot-icon',
-                html: '<div class="mpt-dot"></div>',
-                iconSize: [10, 10],
-                iconAnchor: [5, 5]
-            });
+function initAppMap() {
+    if(appMap) return;
+    appMap = L.map('app-map', { zoomControl: false, attributionControl: false }).setView([-6.126, 106.574], 12);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png').addTo(appMap);
+}
 
-            simpulAwal.forEach(s => {
-                L.marker(s.pos, { icon: dotIcon }).addTo(map)
-                    .bindPopup(`
-                        <div style="font-family: 'Plus Jakarta Sans'; padding: 4px;">
-                            <p style="font-size: 10px; font-weight: 700; color: #0047AB; margin: 0;">${s.nama}</p>
-                            <p style="font-size: 9px; color: #64748b; margin-top: 2px;">${s.desk}</p>
-                        </div>
-                    `);
-            });
-        });
-    </script>
+function switchTab(tabId) {
+    // UI Update
+    document.querySelectorAll('.apage').forEach(p => p.style.display = 'none');
+    document.getElementById(tabId).style.display = 'block';
+    
+    // Nav Update (Safe Scalable Method)
+    document.querySelectorAll('.nav-item').forEach(i => {
+        i.classList.toggle('active', i.dataset.tab === tabId);
+    });
+
+    if(tabId === 'tab-dashboard' && appMap) {
+        setTimeout(() => appMap.invalidateSize(), 100);
+    }
+}
+
+// Initial Load
+window.onload = () => { initLandingMap(); };
+</script>
 </body>
 </html>
